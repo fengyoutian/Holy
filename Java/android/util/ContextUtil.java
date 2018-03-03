@@ -1,4 +1,4 @@
-package com.holy.android.utils;
+package com.holy.android.util;
 
 import android.Manifest;
 import android.content.Context;
