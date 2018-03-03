@@ -1,4 +1,4 @@
-package com.smilegames.holy.utils;
+package com.holy.android.utils;
 
 import android.Manifest;
 import android.content.Context;
