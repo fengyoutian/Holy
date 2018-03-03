@@ -1,4 +1,4 @@
-package com.smilegames.holy.util
+package com.holy.security
 
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
