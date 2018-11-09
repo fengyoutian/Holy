@@ -26,27 +26,15 @@ namespace Holy {
         }
 
         /**
-         * 图集加载场景分组的索引
+         * 图集加载场景分组枚举，不能定义成const，需要同时拿到 key 和 value
          */
-        export const enum ATLAS_GROUP_INDEX {
-            MAIN = 0,
-            HOME,
-            STORE,
-            ROOM,
-            GAME,
-            SCORING,
-        }
-
-        /**
-         * 图集分组名称
-         */
-        export const ATLAS_GROUP_NAME = {
-            MAIN: 'main',
-            HOME: 'home',
-            STORE: 'store',
-            ROOM: 'room',
-            GAME: 'game',
-            SCORING: 'scoring',
+        export enum ATLAS_GROUP {
+            main = 0,
+            home,
+            store,
+            room,
+            game,
+            scoring,
         }
 
         /**
@@ -66,32 +54,14 @@ namespace Holy {
             private _jsonIsLoad: boolean = false; // json 文件是否加载
 
             private _json4AtlasGroup: ATLAS_GROUP_OPTION; // 图集分组内容
-            private ATLAS_GROUP_INDEX_NAME_MAP: Array<string>; // 图集索引和名称映射
 
             private static _instance: Atlas;
-            private constructor() {
-                this.__indexAndName2Map();
-            }
+            private constructor() {}
             public static getInstance(): Atlas {
                 if (!this._instance) {
                     this._instance = new Atlas();
                 }
                 return this._instance;
-            }
-
-            /**
-             * 对索引和名称进行映射
-             */
-            private __indexAndName2Map(): void {
-                this.ATLAS_GROUP_INDEX_NAME_MAP = new Array();
-
-                for (let key in ATLAS_GROUP_NAME) {
-                    if (ATLAS_GROUP_NAME.hasOwnProperty(key)) {
-                        this.ATLAS_GROUP_INDEX_NAME_MAP[this.ATLAS_GROUP_INDEX_NAME_MAP.length] = ATLAS_GROUP_NAME[key];
-                    }
-                }
-
-                // Util.Logger.debug(this.TAG, '__indexAndName2Map: ' + this.ATLAS_GROUP_INDEX_NAME_MAP.toString());
             }
 
             /**
@@ -121,9 +91,9 @@ namespace Holy {
              * @param callback 
              */
             private __loadAtlas(index: number, callback: (flag: boolean) => void): void {
-                const atlasName: string = this.ATLAS_GROUP_INDEX_NAME_MAP[index];
-                if (!atlasName || !this._json4AtlasGroup[atlasName]) {
-                    return Util.Logger.warn(this._TAG, '__loadAtlas 所加载的 ' + index + ' 组图集不存在');
+                const atlasName: string = ATLAS_GROUP[index];
+                if (!this._json4AtlasGroup[atlasName]) {
+                    return Util.Logger.warn(this._TAG, '__loadAtlas 所加载的图集组 ' + atlasName + ' 不存在');
                 }
 
                 // 判断是否有图集需要加载
@@ -154,7 +124,7 @@ namespace Holy {
                     callback(false);
                 }
 
-                FileManager.getInstance().loadJsonByIndex(FILE_INDEX.ATLAS, (json: any) => {
+                FileManager.getInstance().loadJsonByIndex(FILE_NAME.atlas, (json: any) => {
                     this._jsonIsLoad = !!json; // 单个加载成功时会返回对象本身，多个加载时会返回 true or false
 
                     this._jsonIsLoad && this.__parseAtlsGroup4Json(json); // 解析数据

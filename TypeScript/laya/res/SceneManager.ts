@@ -18,7 +18,7 @@ namespace Holy {
             /** 场景json文件url, 不包含后缀 (分离模式) */
             fileUrl?: string, 
             /** 图集索引 */
-            atlasIndex?: ATLAS_GROUP_INDEX
+            atlasIndex?: ATLAS_GROUP
         }
 
         /**
