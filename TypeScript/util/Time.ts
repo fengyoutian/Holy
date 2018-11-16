@@ -36,10 +36,10 @@ namespace Holy {
             }
 
             /**
-             * 获取当前时间戳 (10位, 不包含毫秒)
+             * 获取当前时间戳 (13位, 包含毫秒)
              */
             public getNowTs(): number {
-                return Math.floor(this.getNow().getTime() / 1000);
+                return this.getNow().getTime();
             }
 
             /**

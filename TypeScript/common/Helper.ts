@@ -6,7 +6,7 @@ namespace Holy {
          */
         export class Helper {
             private static _instance: Helper;
-            private constructor() {}
+            private constructor() { }
             public static getInstance(): Helper {
                 if (!this._instance) {
                     this._instance = new Helper();
@@ -35,7 +35,7 @@ namespace Holy {
              * @date 2018-11-09
              */
             isEmpty(data: any): boolean {
-                if (typeof(data) !== 'object') {
+                if (typeof (data) !== 'object') {
                     return this.isNull(data);
                 }
 
@@ -45,13 +45,10 @@ namespace Holy {
                 }
                 // 对象
                 if (data instanceof Object) {
-                    for (let key in data) {
-                        return false;
-                    }
-                    return true;
+                    return Object.keys(data).length === 0;
                 }
             }
-
+            
         }
     }
 }

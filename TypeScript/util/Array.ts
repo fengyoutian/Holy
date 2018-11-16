@@ -6,6 +6,8 @@ namespace Holy {
          * 数组工具
          */
         export class Array {
+            private constructor() {}
+
             /**
              * 模拟 ES6 的fill, 修改数组本身
              * 

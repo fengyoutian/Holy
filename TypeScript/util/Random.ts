@@ -15,11 +15,31 @@ namespace Holy {
             }
 
             /**
+             * 根据种子取随机数
+             * @author Holy
+             * @date   2018-03-24
+             * @param seed 随机数种子
+             * @param min 最小值
+             * @param max 最大值
+             * @param isInteger 是否取整，默认取整
+             */
+            ranBySeed(seed: number, min: number, max: number, isInteger: boolean = true) {
+                max = max || 1;
+                min = min || 0;
+
+                seed = (seed * 9301 + 49297) % 233280;
+                const rnd: number = seed / 233280.0;
+
+                const result: number = rnd * (max - min) + min;
+                return isInteger ? Math.floor(result) : result;
+            }
+
+            /**
              * 根据取值范围计算随机数 [min, max）
              * @author Holy
              * @date 2018-11-09
              */
-            ranBySeed(min: number, max: number): number {
+            ranByRanges(min: number, max: number): number {
                 return (Math.random() * (max - min)) + min;
             }
 

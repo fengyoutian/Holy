@@ -81,6 +81,47 @@ namespace Holy {
             private _click: TOUCH_OPTION[] = [];
 
             /**
+             * 按钮 显示/隐藏
+             * @param btn 按钮
+             * @param visible 默认显示，(true: 显示, false: 隐藏)
+             * @param skin 切换皮肤 (可选) 
+             */
+            visible(btn: Laya.Sprite, visible: boolean = true, skin?: string): void {
+                btn.visible = visible;
+                btn.mouseEnabled = visible;
+
+                if (skin) {
+                    if (btn.hasOwnProperty('skin')) {
+                        (btn as Laya.Image).skin = skin;
+                    } else if (btn.hasOwnProperty('texture')) {
+                        const texture: Laya.Texture = Laya.loader.getRes(skin);
+                        btn.texture = texture;
+                    }
+                }
+            }
+
+            /**
+             * 按钮 允许/禁止 交互
+             * @param btn 按钮
+             * @param disable 默认允许交互 (true: 禁止, false: 允许)
+             * @param skin 切换皮肤 (可选), 注: btn 有 gray 属性时, 禁止时不填 skin 则默认设置灰度使按钮变灰, 允许交互时恢复
+             */
+            disable(btn: Laya.Sprite, disable: boolean = false, skin?: string): any {
+                btn.mouseEnabled = !disable;
+
+                if (skin) {
+                    if (btn.hasOwnProperty('skin')) {
+                        (btn as Laya.Image).skin = skin;
+                    } else if (btn.hasOwnProperty('texture')) {
+                        const texture: Laya.Texture = Laya.loader.getRes(skin);
+                        btn.texture = texture;
+                    }
+                } else if (btn.hasOwnProperty('gray')) {
+                    (btn as Laya.Button).gray = disable;
+                }
+            }
+
+            /**
              * 点击事件
              * @param { Laya.Sprite } node 
              * @param { callback: (node: any, touch?: any) => void } callback tou 为TOUCH_OPTION.touch

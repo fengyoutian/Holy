@@ -66,7 +66,9 @@ namespace Holy {
              * @param opt 
              */
             private static __optHandle(node: Node, opt: RENDLER_OPTION): Node {
-                opt.loadImage && node.hasOwnProperty('loadImage') && (node as Sprite).loadImage(opt.loadImage.url);
+                if (opt.loadImage && node.hasOwnProperty('loadImage')) {
+                    (node as Sprite).loadImage(opt.loadImage.url, void 0, void 0, void 0, void 0, opt.loadImage.complete);
+                }
 
                 node.name = opt.name;
                 node.hasOwnProperty('zOrder') && ((node as Sprite).zOrder = opt.zOrder);
