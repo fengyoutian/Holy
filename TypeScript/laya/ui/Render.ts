@@ -28,7 +28,7 @@ namespace Holy {
         /**
          * 渲染参数
          */
-        export interface RENDLER_OPTION extends UI_OPTION {
+        export interface RENDER_OPTION extends UI_OPTION {
             /** width */
             width?: number;
             /** height */
@@ -54,9 +54,21 @@ namespace Holy {
              * 加载精灵
              * @param opt 
              */
-            static loadSprite(opt: RENDLER_OPTION): Sprite {
+            static loadSprite(opt: RENDER_OPTION): Sprite {
                 const sprite: Sprite = new Sprite();
                 return this.__optHandle(sprite, opt) as Sprite;
+            }
+
+            /**
+             * 加载 Label
+             * @param opt 
+             * @param text 
+             */
+            static loadLabel(opt: RENDER_OPTION, text?: string): Laya.Label {
+                opt.anchorX = 0.5;
+                opt.anchorY = 0.5;
+                const label: Laya.Label = this.__optHandle(new Laya.Label(text), opt) as Laya.Label;
+                return label;
             }
 
             /**
@@ -65,7 +77,7 @@ namespace Holy {
              * @param node 
              * @param opt 
              */
-            private static __optHandle(node: Node, opt: RENDLER_OPTION): Node {
+            private static __optHandle(node: Node, opt: RENDER_OPTION): Node {
                 if (opt.loadImage && node.hasOwnProperty('loadImage')) {
                     (node as Sprite).loadImage(opt.loadImage.url, void 0, void 0, void 0, void 0, opt.loadImage.complete);
                 }

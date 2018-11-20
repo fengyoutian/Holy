@@ -34,7 +34,7 @@ namespace Holy {
             store,
             room,
             game,
-            scoring,
+            gameOver,
         }
 
         /**
