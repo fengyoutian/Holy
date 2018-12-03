@@ -131,6 +131,7 @@ namespace Holy {
 
                 const touchEvent: any = (e: Laya.Event) => {
                     e.stopPropagation(); // 终止事件下发
+                    // Util.Logger.debug(this._TAG, 'target name: ' + e.target.name + ', zOrder: ' + e.target.zOrder + ', touch name: ' + e.type);
                     
                     // 直接使用 node 会在使用 upProxy 时作用域污染
                     let target: Laya.Sprite = e.target === node ? e.target : TOUCH_CLICK.upProxy.target;
@@ -173,6 +174,8 @@ namespace Holy {
                             }
                             break;
                     }
+
+                    // Util.Logger.debug(this._TAG, 'upProxy name: ' + upProxy.name + ', parent: ' + upProxy.parent.name + ', zOrder: ' + upProxy.zOrder + ', visible: ' + upProxy.visible);
                 }
 
                 // node.on(Laya.Event.CLICK, node, touchEvent); // 没代理遮盖，不能起作用

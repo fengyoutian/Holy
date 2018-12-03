@@ -5,7 +5,7 @@ namespace Holy {
         /**
          * 数组工具
          */
-        export class Array {
+        export class ArrayUtil {
             private constructor() {}
 
             /**

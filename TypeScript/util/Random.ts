@@ -15,6 +15,13 @@ namespace Holy {
             }
 
             /**
+             * 随机数
+             */
+            ran(): number {
+                return Math.random();
+            }
+
+            /**
              * 根据种子取随机数
              * @author Holy
              * @date   2018-03-24
@@ -57,7 +64,7 @@ namespace Holy {
              * @author Holy
              * @date 2018-11-09
              */
-            ranByArr(arr: any[]): number {
+            ranByArr<T>(arr: T[]): T {
                 if (!(arr instanceof Array)) {
                     throw TypeError('Please pass in an array!');
                 }

@@ -43,6 +43,13 @@ namespace Holy {
             }
 
             /**
+             * 获取 Unix 时间戳 (10位)
+             */
+            public getNow4Unix(): number {
+                return Math.round(this.getNowTs() / 1000);
+            }
+
+            /**
              * 格式化日期成字符串
              *
              * @param {Date} date

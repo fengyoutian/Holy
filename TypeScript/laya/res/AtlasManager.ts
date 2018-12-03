@@ -21,8 +21,8 @@ namespace Holy {
             desc?: string,
             /** 图集名称 (作为标识) */
             name: string,
-            /** 图集路径 (path = dir + url) */
-            url: string,
+            /** 图集路径 (url = dir + path) */
+            path: string,
         }
 
         /**
@@ -35,6 +35,7 @@ namespace Holy {
             room,
             game,
             gameOver,
+            ranking,
         }
 
         /**
@@ -106,7 +107,7 @@ namespace Holy {
                 const dir: string = (this._json4AtlasGroup[atlasName] as ATLAS_GROUP_OPTION).dir;
                 const atlas: Array<any> = [];
                 for (let obj of arr) {
-                    atlas.push({ url: dir + obj.url, type: Laya.Loader.ATLAS });
+                    atlas.push({ url: dir + obj.path, type: Laya.Loader.ATLAS });
                 }
 
                 // 单个加载成功时会返回对象本身，多个加载时会返回 true or false
