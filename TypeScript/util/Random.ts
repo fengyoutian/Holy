@@ -47,7 +47,7 @@ namespace Holy {
              * @date 2018-11-09
              */
             ranByRanges(min: number, max: number): number {
-                return (Math.random() * (max - min)) + min;
+                return Math.floor((Math.random() * (max - min)) + min);
             }
 
             /**

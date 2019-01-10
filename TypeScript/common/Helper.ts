@@ -21,7 +21,7 @@ namespace Holy {
              * @date 2018-11-09
              */
             isNull(data: any): boolean {
-                return data === void 0;
+                return data == void 0;
             }
 
             /**
@@ -35,8 +35,8 @@ namespace Holy {
              * @date 2018-11-09
              */
             isEmpty(data: any): boolean {
-                if (typeof (data) !== 'object') {
-                    return this.isNull(data);
+                if (this.isNull(data)) {
+                    return true; // typeof(data) !== 'object' 无法判断 null, null 也是对象
                 }
 
                 // 数组
@@ -48,7 +48,7 @@ namespace Holy {
                     return Object.keys(data).length === 0;
                 }
             }
-            
+
         }
     }
 }

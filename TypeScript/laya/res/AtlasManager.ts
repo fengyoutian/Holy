@@ -101,7 +101,7 @@ namespace Holy {
                 const arr: Array<ATLAS_URL_OPTION> = (this._json4AtlasGroup[atlasName] as ATLAS_GROUP_OPTION).arr;
                 if (!arr || arr.length === 0) {
                     Util.Logger.debug(this._TAG, '__loadAtlas 没有要加载的图集文件');
-                    return callback(false);
+                    return callback(true);
                 }
 
                 const dir: string = (this._json4AtlasGroup[atlasName] as ATLAS_GROUP_OPTION).dir;
