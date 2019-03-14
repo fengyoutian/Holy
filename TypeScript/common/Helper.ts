@@ -39,6 +39,11 @@ namespace Holy {
                     return true; // typeof(data) !== 'object' 无法判断 null, null 也是对象
                 }
 
+                // 字符串判断
+                if (typeof(data) == 'string' || data instanceof String) {
+                    return data == '' || data.length == 0;
+                }
+
                 // 数组
                 if (data instanceof Array) {
                     return data.length === 0;
@@ -47,6 +52,8 @@ namespace Holy {
                 if (data instanceof Object) {
                     return Object.keys(data).length === 0;
                 }
+
+                return false;
             }
 
         }

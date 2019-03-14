@@ -130,52 +130,56 @@ namespace Holy {
                 const upProxy: Laya.Sprite = this.__loadUpProxy();
 
                 const touchEvent: any = (e: Laya.Event) => {
-                    e.stopPropagation(); // 终止事件下发
-                    // Util.Logger.debug(this._TAG, 'target name: ' + e.target.name + ', zOrder: ' + e.target.zOrder + ', touch name: ' + e.type);
-                    
-                    // 直接使用 node 会在使用 upProxy 时作用域污染
-                    let target: Laya.Sprite = e.target === node ? e.target : TOUCH_CLICK.upProxy.target;
-                    let opt: TOUCH_OPTION = this._click[target[TOUCH_CLICK.idName]];
-                    switch (e.type) {
-                        case Laya.Event.CLICK:
-                            opt.callback && opt.callback(target, opt.touch);
-                            break;
-                        case Laya.Event.MOUSE_DOWN:
-                            // 修改样式
-                            target.alpha = opt.originStyle.alpha - TOUCH_CLICK.alpha;
-                            target.scale(opt.originStyle.scaleX - TOUCH_CLICK.scale, opt.originStyle.scaleY - TOUCH_CLICK.scale);
-                            // 初始参数
-                            opt.touch = {
-                                beginPos: { x: e.stageX, y: e.stageY },
-                                beginSpPos: { x: target.x, y: target.y }
-                            }
-                            // 处理 up 事件代理
-                            TOUCH_CLICK.upProxy.target = target;
-                            upProxy.zOrder = target.zOrder + 1;
-                            upProxy.visible = true;
-                            break;
-                        case Laya.Event.MOUSE_UP:
-                            // 恢复样式
-                            if (target) {
-                                target.alpha = opt.originStyle.alpha;
-                                target.scale(opt.originStyle.scaleX, opt.originStyle.scaleY);
-                            }
-                            // 结束参数
-                            if (opt) {
-                                opt.touch.endPos = { x: e.stageX, y: e.stageY };
-                                opt.touch.endSpPos = { x: target.x, y: target.y };
-                            }
-                            // 处理 up 事件代理
-                            upProxy.visible = false;
-                            // 处理点击
-                            if (this.__hittest(target, opt)) {
-                                Util.Logger.debug(this._TAG, target.name + ' clicked.');
+                    try {
+                        e.stopPropagation(); // 终止事件下发
+                        // Util.Logger.debug(this._TAG, 'target name: ' + e.target.name + ', zOrder: ' + e.target.zOrder + ', touch name: ' + e.type);
+                        
+                        // 直接使用 node 会在使用 upProxy 时作用域污染
+                        let target: Laya.Sprite = e.target === node ? e.target : TOUCH_CLICK.upProxy.target;
+                        let opt: TOUCH_OPTION = this._click[target[TOUCH_CLICK.idName]];
+                        switch (e.type) {
+                            case Laya.Event.CLICK:
                                 opt.callback && opt.callback(target, opt.touch);
-                            }
-                            break;
-                    }
+                                break;
+                            case Laya.Event.MOUSE_DOWN:
+                                // 修改样式
+                                target.alpha = opt.originStyle.alpha - TOUCH_CLICK.alpha;
+                                target.scale(opt.originStyle.scaleX - TOUCH_CLICK.scale, opt.originStyle.scaleY - TOUCH_CLICK.scale);
+                                // 初始参数
+                                opt.touch = {
+                                    beginPos: { x: e.stageX, y: e.stageY },
+                                    beginSpPos: { x: target.x, y: target.y }
+                                }
+                                // 处理 up 事件代理
+                                TOUCH_CLICK.upProxy.target = target;
+                                upProxy.zOrder = target.zOrder + 1;
+                                upProxy.visible = true;
+                                break;
+                            case Laya.Event.MOUSE_UP:
+                                // 恢复样式
+                                if (target) {
+                                    target.alpha = opt.originStyle.alpha;
+                                    target.scale(opt.originStyle.scaleX, opt.originStyle.scaleY);
+                                }
+                                // 结束参数
+                                if (opt) {
+                                    opt.touch.endPos = { x: e.stageX, y: e.stageY };
+                                    opt.touch.endSpPos = { x: target.x, y: target.y };
+                                }
+                                // 处理 up 事件代理
+                                upProxy.visible = false;
+                                // 处理点击
+                                if (this.__hittest(target, opt)) {
+                                    Util.Logger.debug(this._TAG, target.name + ' clicked.');
+                                    opt.callback && opt.callback(target, opt.touch);
+                                }
+                                break;
+                        }
 
-                    // Util.Logger.debug(this._TAG, 'upProxy name: ' + upProxy.name + ', parent: ' + upProxy.parent.name + ', zOrder: ' + upProxy.zOrder + ', visible: ' + upProxy.visible);
+                        // Util.Logger.debug(this._TAG, 'upProxy name: ' + upProxy.name + ', parent: ' + upProxy.parent.name + ', zOrder: ' + upProxy.zOrder + ', visible: ' + upProxy.visible);
+                    } catch (e) {
+                        Util.Logger.error(e);
+                    }
                 }
 
                 // node.on(Laya.Event.CLICK, node, touchEvent); // 没代理遮盖，不能起作用
@@ -194,6 +198,18 @@ namespace Holy {
                     },
                     callback: callback
                 });
+            }
+
+            /**
+             * 取消抬起状态 (隐藏抬起代理)
+             * <p>
+             *  开放api为特殊情况使用
+             *  eg: 长按按钮界面切换时, 按钮销毁导致代理无法隐藏
+             * </p>
+             */
+            offUpState(): void {
+                const upProxy: Laya.Sprite = this.__loadUpProxy();
+                upProxy && (upProxy.visible = false);
             }
 
             /**

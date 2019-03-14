@@ -36,6 +36,7 @@ namespace Holy {
             game,
             gameOver,
             ranking,
+            activity
         }
 
         /**
