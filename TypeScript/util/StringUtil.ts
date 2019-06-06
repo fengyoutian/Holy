@@ -9,6 +9,20 @@ namespace Holy {
             private constructor() { }
 
             /**
+             * 全文替换
+             * <p>
+             *  在 orgStr 中搜做到 searchValue 并全部替换成 replaceValue
+             * </p>
+             * @param orgStr 源字符串
+             * @param searchValue 要替换掉的字符串
+             * @param replaceValue 需要替换成的字符串
+             */
+            static replaceAll(orgStr: string, searchValue: string, replaceValue: string): string {
+                const reg: RegExp = new RegExp(searchValue, 'g');
+                return orgStr.replace(reg, replaceValue);
+            }
+
+            /**
              * 获取字符串长度
              * @param str 
              */
@@ -40,6 +54,37 @@ namespace Holy {
                 }
 
                 return str;
+            }
+
+            /**
+             * 在字符串之间插入分隔符
+             * <example>
+             *  ('example', ' ', 1) => 'e x a m p l e';
+             *  ('example', '_', 2) => 'ex_am_pl_e';
+             *  ('example', '-', 7) => 'example';
+             * </example>
+             * @param orgStr 原字符串
+             * @param separator 分隔符
+             * @param splitLen 字符分割长度
+             */
+            static insertSplitter(orgStr: string, separator: string = ' ', splitLen: number = 1): string {
+                const length: number = orgStr.length;
+                let newStr: string = '';
+
+                if (length == 1 || length <= splitLen) return orgStr; // 只有一个字符 或 小于分割数 直接返回原字符串
+
+                for (let i: number = 0; i < length; i += splitLen) {
+                    if (i < length) {
+                        // ('example', ' ', 3) => 'exa ';
+                        newStr = newStr.concat(orgStr.substr(i, splitLen));
+                    }
+                    // 剩余的字符串长度大于分割量
+                    if (length - i - 1 >= splitLen) {
+                        newStr = newStr.concat(separator);
+                    }
+                }
+
+                return newStr;
             }
 
         }
