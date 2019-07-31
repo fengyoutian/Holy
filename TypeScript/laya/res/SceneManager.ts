@@ -31,15 +31,21 @@ namespace Holy {
          */
         export interface FORCE_REPLAYCE_RULE {
             /** 
+             * 默认语言 
+             * <p>
+             *  与目录相关
+             * </p>
+             */
+            defaultLocale: string;
+            /** 
              * 本地化根目录(需替换的值)
              * <p>
              *  替换规则:
-             *      localeRootDir 直接替换成 localeRootDir_Language
-             *  example:
-             *      'resource/' 替换成 'resource_en_US/'
+             *      首次: localeRootDirs[locale] replace localeRootDirs[defaultLocale]
+             *      之后: localeRootDirs[locale] replace localeRootDirs[preLocale]
              * </p>
              */
-            localeRootDir: string;
+            localeRootDirs: { [key: string]: string };
 
             /** 过滤语言, 在列表的语言则不会替换 */
             filterLanguage?: string[];
@@ -62,6 +68,14 @@ namespace Holy {
                 return this._instance;
             }
 
+            /**
+             * 之前的语言，防止多次替换无法替换回默认语言
+             * <p>
+             *  key: ui的存储键
+             *  value: 对应的语言
+             * </p>
+             */
+            private _uiLocal: { [symbol: string]: string } = { };
             private _locale: string = 'zh_CN'; // 默认中文（简体）
             private _forceReplace: FORCE_REPLAYCE_RULE; // 强制替换规则
 
@@ -76,6 +90,10 @@ namespace Holy {
             public setLocale(language: string = 'zh_CN', forceReplace?: FORCE_REPLAYCE_RULE): void {
                 if (Holy.Common.Helper.getInstance().isEmpty(language)) {
                     return Holy.Util.Logger.warn(this._TAG, 'setLocale language is ' + language);
+                }
+
+                if (language === this._locale) {
+                    return Holy.Util.Logger.debug(this._TAG, `setLocale language is ${language} equal current!`);
                 }
 
                 this._locale = language;
@@ -98,16 +116,17 @@ namespace Holy {
                             return callback(false);
                         }
 
-                        Laya.View.uiMap[opt.fileUrl] = this.__forceReplace4Locale(data);
+                        Laya.View.uiMap[opt.fileUrl] = this.__forceReplace4Locale(opt.fileUrl, data);
                         this.__loadAtlas(opt, callback);
                     });
                 } else if (SCENE_MODE.LOAD === opt.sceneMode && !Laya.View.uiMap) {
-                    FileManager.getInstance().loadByUrl('ui.json', (data: any) => {
+                    const url: string = 'ui.json';
+                    FileManager.getInstance().loadByUrl(url, (data: any) => {
                         if (!data) {
                             return callback(false);
                         }
 
-                        Laya.View.uiMap = this.__forceReplace4Locale(data);
+                        Laya.View.uiMap = this.__forceReplace4Locale(url, data);
                         this.__loadAtlas(opt, callback);
                     });
                 } else {
@@ -146,7 +165,7 @@ namespace Holy {
                         continue; // 非嵌入式，没有 uiView 参数，直接跳到下一个
                     }
                     
-                    newObj['uiView'] = this.__forceReplace4Locale(uiView); // 强制替换
+                    newObj['uiView'] = this.__forceReplace4Locale(key, uiView); // 强制替换
                 }
             }
 
@@ -154,10 +173,11 @@ namespace Holy {
              * 强制替换 data 里的资源根目录
              * @param data 
              */
-            private __forceReplace4Locale(data: any): any {
+            private __forceReplace4Locale(uiKey: string, data: any): any {
                 if (
                     Holy.Common.Helper.getInstance().isEmpty(this._forceReplace) ||
-                    Holy.Common.Helper.getInstance().isEmpty(this._forceReplace.localeRootDir) || 
+                    Holy.Common.Helper.getInstance().isEmpty(this._forceReplace.localeRootDirs) || 
+                    Holy.Common.Helper.getInstance().isEmpty(this._forceReplace.localeRootDirs[this._locale]) ||
                     typeof (data) !== 'object'
                 ) {
                     return data; // 不替换
@@ -166,7 +186,7 @@ namespace Holy {
                 if (!Holy.Common.Helper.getInstance().isEmpty(this._forceReplace.replaceLanguage)) {
                     for (const locale of this._forceReplace.replaceLanguage) {
                         if (this._locale == locale) {
-                            return this.__replaceContent(data);
+                            return this.__replaceContent(uiKey, data);
                         }
                     }
                     return data; // 替换列表则不替换
@@ -178,7 +198,7 @@ namespace Holy {
                             return data; // 在过滤列表，不替换
                         }
                     }
-                    return this.__replaceContent(data);
+                    return this.__replaceContent(uiKey, data);
                 }
             }
 
@@ -186,19 +206,22 @@ namespace Holy {
              * 替换内容
              * @param data 
              */
-            private __replaceContent(data: any): any {
-                const localeRootDir: string = this._forceReplace.localeRootDir;
-                const splitIndex: number = localeRootDir.lastIndexOf('/');
-                const searchValue: string = (() => {
-                    if (splitIndex != -1) {
-                        return localeRootDir;
+            private __replaceContent(uiKey: string, data: any): any {
+                const handleIndexOf = (str: string) => {
+                    if (str.lastIndexOf('/') != -1) {
+                        return str;
                     }
+                    return str.concat('/');
+                }
+                // 判断 uiLocale 是否存在，不存在为未替换过，直接使用默认语言
+                const preLocale: string = !Holy.Common.Helper.getInstance().isEmpty(this._uiLocal[uiKey]) ? this._uiLocal[uiKey] : this._forceReplace.defaultLocale;
 
-                    return localeRootDir.concat('/');
-                })();
+                // 判断语言目录是否'/'结尾，不是则加上
+                const searchValue: string = handleIndexOf(this._forceReplace.localeRootDirs[preLocale]);
+                const replaceValue: string = handleIndexOf(this._forceReplace.localeRootDirs[this._locale]);
 
                 const uiStr: string = JSON.stringify(data);
-                const replaceValue: string = searchValue.substr(0, splitIndex).concat('_', this._locale, '/');
+                this._uiLocal[uiKey] = this._locale; // 保存之前使用的语言先
                 return JSON.parse(Holy.Util.StringUtil.replaceAll(uiStr, searchValue, replaceValue));
             }
 
